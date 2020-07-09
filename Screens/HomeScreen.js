@@ -12,7 +12,8 @@ import MatchScreen from './MatchScreen';
 import NotificationScreen from './NotificationScreen';
 import DashBoard from './dashboard'
 import LeaderBoardScreen from './LeaderBoardScreen';
-
+import * as Font from 'expo-font';
+import { AppLoading } from 'expo';
 
 class HomeScreen extends React.Component {
   state = {
@@ -20,10 +21,16 @@ class HomeScreen extends React.Component {
     displayName: ""
   };
 
-  componentDidMount() {
+  async  componentDidMount() {
     const { email, displayName } = firebase.auth().currentUser;
 
     this.setState({ email, displayName });
+    await Font.loadAsync({
+      Roboto: require('native-base/Fonts/Roboto.ttf'),
+      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+      ...Ionicons.font,
+    });
+    this.setState({ isReady: true });
   }
 
   signOutUser = () => {
@@ -31,6 +38,9 @@ class HomeScreen extends React.Component {
   };
 
   render() {
+    if (!this.state.isReady) {
+      return <AppLoading />;
+    }
     return (
       <View style={styles.container}>
         <AntDesign name="logout" size={26} color="black" onPress={this.signOutUser} style={{ left: 150 }} />
@@ -103,6 +113,7 @@ const TabNavigator = createMaterialBottomTabNavigator(
         ),
       }
     },
+ 
 
   },
   {

@@ -4,6 +4,7 @@ import LoadingScreen from "./Screens/LoadingScreen";
 import LoginScreen from './Screens/LoginScreen';
 import HomeScreen from './Screens/HomeScreen';
 import RegisterScreen from './Screens/RegisterScreen';
+import Receipt from './Screens/Receipt';
 
 
 import { YellowBox } from 'react-native';
@@ -26,7 +27,13 @@ console.warn = message => {
 const AppStack = createStackNavigator(
   {
 
-    Home: HomeScreen
+    Home: HomeScreen,
+    Receipt: {
+      screen: Receipt,
+      navigationOptions: {
+        header: null
+      }
+    }
 
   })
 const AuthStack = createStackNavigator({

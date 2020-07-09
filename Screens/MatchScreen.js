@@ -2,10 +2,11 @@ import React from 'react';
 import {Text,StyleSheet, View} from 'react-native'; 
 import MatchMaking from './matchMaking'
 class MatchScreen extends React.Component {  
+
     render() {  
         return (  
             <View style={styles.container}>  
-                 <MatchMaking/>
+                 <MatchMaking navigation={this.props.navigation}/>
             </View>  
         );  
     }  

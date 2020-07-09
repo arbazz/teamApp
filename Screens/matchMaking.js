@@ -9,6 +9,9 @@ import ChallengeTeam from "./challengeTeam"
 const { width, height } = Dimensions.get('screen');
 
 class MatchMaking extends Component {
+  constructor(props){
+    super(props);
+  }
 
   render() {
     return (
@@ -17,7 +20,7 @@ class MatchMaking extends Component {
         <Header />
           <Tabs >
           <Tab heading="Ground Booking"  tabStyle = {{backgroundColor:"#AED6F1"}} textStyle = {{color:"black"}} activeTabStyle = {{backgroundColor:"#85C1E9"}}>
-          <GroundBooking/>
+          <GroundBooking navigation={this.props.navigation}/>
           </Tab>
           <Tab  heading="Build Team" tabStyle = {{backgroundColor:"#AED6F1"}} textStyle = {{color:"black"}} activeTabStyle = {{backgroundColor:"#85C1E9"}}>
           <TeamBuilding/>

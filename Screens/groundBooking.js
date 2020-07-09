@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Picker, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
+import { View, StyleSheet, Picker, TouchableOpacity, Dimensions, ScrollView, ActivityIndicator } from 'react-native';
 import { Block, Text, Button, Radio, } from "galio-framework";
 import { Form, DatePicker, Item } from "native-base";
 import firebase from '../firebase'
@@ -21,7 +21,8 @@ class GroundBooking extends Component {
       six: true,
       nine: true,
       twelve: true,
-      three: true
+      three: true,
+      loading: false
     }
     this.setDate = this.setDate.bind(this);
   }
@@ -37,7 +38,7 @@ class GroundBooking extends Component {
 
   async componentDidMount() {
     this.fetchData();
-
+    // console.log(this.props.navigation.navigate)
   }
 
   fetchData = () => {
@@ -70,22 +71,29 @@ class GroundBooking extends Component {
       three: true
     })
     if (data.length) {
-      if (data[0].chosenDate === date) {
-        if (data[0].time === "03:00 PM") {
-          this.setState({ three: false });
+      console.log("data", data)
+      data.some((a, i) => {
+        if (a.Area === Area && a.Ground === Ground && a.chosenDate === date) {
+          console.log("found", i);
+          if (data[i].chosenDate === date) {
+            if (data[i].time === "03:00 PM") {
+              this.setState({ three: false });
+            }
+            if (data[i].time === "12:00 PM") {
+              this.setState({ twelve: false })
+            }
+            if (data[i].time === "09:00 AM") {
+              this.setState({ nine: false })
+            }
+            if (data[i].time === "06:00 AM") {
+              this.setState({ six: false });
+            }
+            console.log("date found  ", data[i].chosenDate);
+          } else {
+          }
         }
-        if (data[0].time === "12:00 PM") {
-          this.setState({ twelve: false })
-        }
-        if (data[0].time === "09:00 AM") {
-          this.setState({ nine: false })
-        }
-        if (data[0].time === "06:00 AM") {
-          this.setState({ six: false });
-        }
-        console.log("date found  ", data[0].chosenDate);
-      } else {
-      }
+      })
+
     }
   }
 
@@ -113,21 +121,31 @@ class GroundBooking extends Component {
   addBooking = () => {
     console.log("booking")
     const { Area, Ground, chosenDate, time } = this.state;
-
+    this.setState({loading: true});
     var db = firebase.firestore();
-
-    db.collection("bookings").add({
-      Area,
-      Ground,
-      chosenDate: chosenDate.toISOString().slice(0, 10).replace(/-/g, ""),
-      time
-    })
-      .then(function (docRef) {
-        console.log("Document written with ID: ", docRef.id);
+    const that = this;
+    if (chosenDate) {
+      db.collection("bookings").add({
+        Area,
+        Ground,
+        chosenDate: chosenDate.toISOString().slice(0, 10).replace(/-/g, ""),
+        time
       })
-      .catch(function (error) {
-        console.error("Error adding document: ", error);
-      });
+        .then(function (docRef) {
+          console.log("Document written with ID: ", docRef.id);
+          that.setState({loading: false});
+          alert("Booking success");
+          that.componentDidMount()
+          that.props.navigation.navigate("Receipt", {Area, Ground, chosenDate, time});
+        })
+        .catch(function (error) {
+          console.error("Error adding document: ", error);
+          that.setState({loading: false});
+        });
+    } else {
+      alert("no date!")
+      that.setState({loading: false});
+    }
 
   }
 
@@ -137,8 +155,7 @@ class GroundBooking extends Component {
   }
 
   render() {
-    // console.log(this.state.data)
-    const { six, three, twelve, nine } = this.state;
+    const { six, three, twelve, nine, loading } = this.state;
     return (
       <Block flex style={styles.container}>
         <Block flex center style={styles.bookGround} >
@@ -233,7 +250,11 @@ class GroundBooking extends Component {
             round uppercase
             color="#85C1E9"
             onPress={this.handleBooking}
-            style={{ marginBottom: 3, width: 200, alignself: 'center' }}>Book</Button>
+            style={{ marginBottom: 3, width: 200, alignself: 'center' }}>
+              {!loading ? "Book" :
+              <ActivityIndicator/>
+              }
+              </Button>
         </Block>
       </Block>
     );
